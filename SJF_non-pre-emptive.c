@@ -47,7 +47,7 @@ void main(){
     int cf=p[0].bt, min=INT_MAX,m,count=0;
     p[0].v=1;
 
-    while(count<=3){
+    while(count<n-1){
     for(int i=0;i<n;i++){
         if(p[i].at<=cf && p[i].v==0){
             if(p[i].bt<min){
