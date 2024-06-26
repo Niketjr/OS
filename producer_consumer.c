@@ -39,7 +39,7 @@ void main(){
         printf("enter optn: ");
         scanf("%d", &)
         if(optn == 1){
-            producer(sharedMemory, &mutex, &)
+            producer(sharedMemory, &mutex, &empty, &full);
         }
     }
 }
