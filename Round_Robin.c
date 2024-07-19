@@ -12,7 +12,6 @@ struct Process {
     int st;
     int et;
     int rt;
-    int vi;
     int obt;
 };
 
@@ -38,7 +37,6 @@ int main() {
         p[i].obt = p[i].bt;
         p[i].st = -1;
         p[i].et = -1;
-        p[i].vi = 0;
     }
     int count = 0;
     int ind = 0;
