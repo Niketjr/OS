@@ -48,23 +48,23 @@ void main(){
     p[0].v=1;
 
     while(count<n-1){
-    for(int i=0;i<n;i++){
-        if(p[i].at<=cf && p[i].v==0){
-            if(p[i].bt<min){
-                min=p[i].bt;
-                m=i;
+        for(int i=0;i<n;i++){
+            if(p[i].at<=cf && p[i].v==0){
+                if(p[i].bt<min){
+                    min=p[i].bt;
+                    m=i;
+                }
             }
         }
-    }
-    p[m].v=1;
-    cf+=p[m].bt;
-    min=INT_MAX;
-
-    temp=p[count+1];
-    p[count+1]=p[m];
-    p[m]=temp;
-
-    count++;
+        p[m].v=1;
+        cf+=p[m].bt;
+        min=INT_MAX;
+    
+        temp=p[count+1];
+        p[count+1]=p[m];
+        p[m]=temp;
+    
+        count++;
     }
 
     printf("Process\tWaiting Time\tTurn Around Time\tResponse Time\n");
