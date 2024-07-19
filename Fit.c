@@ -1,67 +1,134 @@
+/*Write a C program to simulate the following contiguous memory allocation
+techniques
+a) Worst-fit
+b) Best-fit
+c) First-fit 
+cs 158 */
+
 #include <stdio.h>
-#include <string.h>
 
-void allocateMemory(char method, int blockSize[], int m, int processSize[], int n) {
-    int allocation[n];
-    memset(allocation, -1, sizeof(allocation));
+#define MAX 25
 
-    for (int i = 0; i < n; i++) {
-        int idx = -1;
-        for (int j = 0; j < m; j++) {
-            if (blockSize[j] >= processSize[i]) {
-                if (method == 'F') {
-                    idx = j;
-                    break; // For First-Fit, take the first suitable block
-                } else if (method == 'B' && (idx == -1 || blockSize[j] < blockSize[idx])) {
-                    idx = j;
-                } else if (method == 'W' && (idx == -1 || blockSize[j] > blockSize[idx])) {
-                    idx = j;
+void firstFit(int numberOfBlocks, int numberOfFiles, int blockSize[], int fileSize[]) {
+    int fragment[MAX], blockFlag[MAX] = {0}, fileFlag[MAX] = {0};
+    int i, j, temp;
+
+    for (i = 1; i <= numberOfFiles; i++) {
+        for (j = 1; j <= numberOfBlocks; j++) {
+            if (blockFlag[j] != 1) {
+                temp = blockSize[j] - fileSize[i];
+                if (temp >= 0) {
+                    fileFlag[i] = j;
+                    fragment[i] = temp;
+                    blockFlag[j] = 1;
+                    break;
                 }
             }
         }
-
-        if (idx != -1) {
-            allocation[i] = idx;
-            blockSize[idx] -= processSize[i];
-        }
     }
 
-    const char* methodName = (method == 'F') ? "First-Fit" : (method == 'B') ? "Best-Fit" : "Worst-Fit";
-    printf("\n%s Allocation:\n", methodName);
-    printf("Process No.\tProcess Size\tBlock No.\n");
-    for (int i = 0; i < n; i++) {
-        printf("%d\t\t%d\t\t", i + 1, processSize[i]);
-        if (allocation[i] != -1)
-            printf("%d\n", allocation[i] + 1);
-        else
+    printf("\nMemory Management Scheme - First Fit\n");
+    printf("File No:\tFile Size:\tBlock No:\tBlock Size:\tFragment\n");
+    for (i = 1; i <= numberOfFiles; i++) {
+        printf("%d\t\t%d\t\t", i, fileSize[i]);
+        if (fileFlag[i] != 0) {
+            printf("%d\t\t%d\t\t%d\n", fileFlag[i], blockSize[fileFlag[i]], fragment[i]);
+        } else {
             printf("Not Allocated\n");
+        }
+    }
+}
+
+void bestFit(int numberOfBlocks, int numberOfFiles, int blockSize[], int fileSize[]) {
+    int fragment[MAX], blockFlag[MAX] = {0}, fileFlag[MAX] = {0};
+    int i, j, temp, lowest = 10000;
+
+    for (i = 1; i <= numberOfFiles; i++) {
+        for (j = 1; j <= numberOfBlocks; j++) {
+            if (blockFlag[j] != 1) {
+                temp = blockSize[j] - fileSize[i];
+                if (temp >= 0 && lowest > temp) {
+                    fileFlag[i] = j;
+                    lowest = temp;
+                }
+            }
+        }
+        fragment[i] = lowest;
+        blockFlag[fileFlag[i]] = 1;
+        lowest = 10000;
+    }
+
+    printf("\nMemory Management Scheme - Best Fit\n");
+    printf("File No:\tFile Size:\tBlock No:\tBlock Size:\tFragment\n");
+    for (i = 1; i <= numberOfFiles; i++) {
+        printf("%d\t\t%d\t\t", i, fileSize[i]);
+        if (fileFlag[i] != 0) {
+            printf("%d\t\t%d\t\t%d\n", fileFlag[i], blockSize[fileFlag[i]], fragment[i]);
+        } else {
+            printf("Not Allocated\n");
+        }
+    }
+}
+
+void worstFit(int numberOfBlocks, int numberOfFiles, int blockSize[], int fileSize[]) {
+    int fragment[MAX], blockFlag[MAX] = {0}, fileFlag[MAX] = {0};
+    int i, j, temp, highest = 0;
+
+    for (i = 1; i <= numberOfFiles; i++) {
+        for (j = 1; j <= numberOfBlocks; j++) {
+            if (blockFlag[j] != 1) {
+                temp = blockSize[j] - fileSize[i];
+                if (temp >= 0 && highest < temp) {
+                    fileFlag[i] = j;
+                    highest = temp;
+                }
+            }
+        }
+        fragment[i] = highest;
+        blockFlag[fileFlag[i]] = 1;
+        highest = 0;
+    }
+
+    printf("\nMemory Management Scheme - Worst Fit\n");
+    printf("File No:\tFile Size:\tBlock No:\tBlock Size:\tFragment\n");
+    for (i = 1; i <= numberOfFiles; i++) {
+        printf("%d\t\t%d\t\t", i, fileSize[i]);
+        if (fileFlag[i] != 0) {
+            printf("%d\t\t%d\t\t%d\n", fileFlag[i], blockSize[fileFlag[i]], fragment[i]);
+        } else {
+            printf("Not Allocated\n");
+        }
     }
 }
 
 int main() {
-    int m, n;
-    printf("Enter the number of memory blocks: ");
-    scanf("%d", &m);
-    int blockSize[m], blockSize1[m], blockSize2[m], blockSize3[m];
-    printf("Enter the sizes of the memory blocks:\n");
-    for (int i = 0; i < m; i++) {
-        printf("Block %d: ", i + 1);
+    int blockSize[MAX], fileSize[MAX], numberOfBlocks, numberOfFiles;
+
+    printf("\nEnter the number of blocks: ");
+    scanf("%d", &numberOfBlocks);
+    printf("Enter the number of files: ");
+    scanf("%d", &numberOfFiles);
+    printf("\nEnter the size of the blocks:\n");
+    for (int i = 1; i <= numberOfBlocks; i++) {
+        printf("Block %d: ", i);
         scanf("%d", &blockSize[i]);
-        blockSize1[i] = blockSize2[i] = blockSize3[i] = blockSize[i];
+    }
+    printf("Enter the size of the files:\n");
+    for (int i = 1; i <= numberOfFiles; i++) {
+        printf("File %d: ", i);
+        scanf("%d", &fileSize[i]);
     }
 
-    printf("Enter the number of processes: ");
-    scanf("%d", &n);
-    int processSize[n];
-    printf("Enter the sizes of the processes:\n");
-    for (int i = 0; i < n; i++) {
-        printf("Process %d: ", i + 1);
-        scanf("%d", &processSize[i]);
+    int blockSizeFirstFit[MAX], blockSizeBestFit[MAX], blockSizeWorstFit[MAX];
+    for (int i = 1; i <= numberOfBlocks; i++) {
+        blockSizeFirstFit[i] = blockSize[i];
+        blockSizeBestFit[i] = blockSize[i];
+        blockSizeWorstFit[i] = blockSize[i];
     }
 
-    allocateMemory('F', blockSize1, m, processSize, n);
-    allocateMemory('B', blockSize2, m, processSize, n);
-    allocateMemory('W', blockSize3, m, processSize, n);
+    firstFit(numberOfBlocks, numberOfFiles, blockSizeFirstFit, fileSize);
+    bestFit(numberOfBlocks, numberOfFiles, blockSizeBestFit, fileSize);
+    worstFit(numberOfBlocks, numberOfFiles, blockSizeWorstFit, fileSize);
 
     return 0;
 }
